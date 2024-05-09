@@ -18,7 +18,8 @@ class Client(models.Model):
 
 class Supplier(models.Model):
     name = models.CharField(max_length=100)
-    contact_information = models.CharField(max_length=100)
+    material = models.CharField(max_length=255)
+    contact = models.CharField(max_length=20)
 
     def __str__(self):
         return self.name

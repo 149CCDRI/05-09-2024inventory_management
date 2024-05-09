@@ -1,0 +1,43 @@
+from django.db import models
+from django.utils import timezone
+
+class Service(models.Model):
+    service_name = models.CharField(max_length=100)    
+    inventory_level = models.IntegerField()
+
+    def __str__(self):
+        return self.service_name
+
+class Client(models.Model):
+    name = models.CharField(max_length=100)
+    contact_information = models.CharField(max_length=100)
+    address = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=100)
+    contact_information = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Material(models.Model):
+    material_name = models.CharField(max_length=100)
+    initial_quantity = models.IntegerField()
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.material_name
+
+class Order(models.Model):
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True, blank=True)
+    quantity = models.IntegerField()
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    order_date = models.DateTimeField(default=timezone.now)
+    ready_by_date = models.DateTimeField()
+
+    def __str__(self):
+        return f"Order #{self.id}"

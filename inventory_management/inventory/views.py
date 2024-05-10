@@ -43,22 +43,8 @@ def place_order(request):
     """
     View function to place a new order.
     """
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.order_date = timezone.now()
-            fulfill_order(order)
-            return redirect('order_success')
-    else:
-        form = OrderForm()
-    return render(request, 'inventory/place_order.html', {'form': form})
-
-def order_success(request):
-    """
-    View function to display a success message after placing an order.
-    """
-    return HttpResponse("Your order has been placed successfully.")
+    # Your view logic here
+    return render(request, 'inventory/place_order.html')
 
 def inventory(request):
     """

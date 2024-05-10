@@ -1,11 +1,175 @@
-{% includes 'partials/base.html' %}
-{% load i18n %} 
-{% load cms_tags sekizai_tags %}
-{% block content %}
-<h1>Place Order</h1>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Submit Order</button>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders</title>
+<style>
+    nav {
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+    }
+    
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 10px;
+    }
+    .content {
+        padding: 20px;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .content {
+            padding: 10px;
+        }
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+    th {
+        background-color: #017F8D;
+        color: #ffffff;
+        text-align: center;
+    }
+    button {
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    button.add-btn {
+        background-color: #017F8D;
+        color: #fff;
+    }
+    button.edit-btn {
+        background-color: #017F8D;
+        color: #fff;
+    }
+    button.delete-btn {
+        background-color: #DB3838;
+        color: #fff;
+    }
+    h1 {
+        color: #017F8D;
+    }
+</style>
+</head>
+<body>
+
+{% include "partials/base.html" %}
+
+<div class="content">
+    <h1>Orders</h1>
+
+    <form id="orderForm">
+        <input type="text" name="name" placeholder="Name">
+        <input type="number" name="quantity" placeholder="Quantity">
+        <input type="number" name="total_amount" placeholder="Total Amount">
+        <input type="date" name="order_date" placeholder="Order Date">
+        <input type="date" name="readyby_date" placeholder="Ready By">
+        <select id="progress" name="progress">
+          <option value="complete">Complete</option>
+          <option value="in_progress">In Progress</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <input type="number" name="transaction_quantity" placeholder="Transaction Quantity">
+        
+        <button type="submit" class="add-btn">Add</button>
+    </form>
+
+    <table id="orderTable">
+        <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+            <th>Total Amount</th>
+            <th>Order Date</th>
+            <th>Ready By</th>
+            <th>Progress</th>
+            <th>Transaction Quantity</th>
+            <th>Actions</th>
+        </tr>
+    </table>
+</div>
+
+<script>
+document.getElementById("orderForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    var formData = new FormData(this);
+    var table = document.getElementById("orderTable");
+    var newRow = table.insertRow(-1);
+    var cellIndex = 0;
+    formData.forEach(function(value) {
+        var cell = newRow.insertCell(cellIndex++);
+        cell.textContent = value;
+    });
+    var actionCell = newRow.insertCell(cellIndex);
+    var editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.className = "edit-btn";
+    editButton.onclick = function() {
+        var cells = newRow.cells;
+        for (var i = 0; i < cells.length - 1; i++) {
+            var input = document.createElement("input");
+            input.value = cells[i].textContent;
+            cells[i].textContent = '';
+            cells[i].appendChild(input);
+        }
+        editButton.textContent = "Save";
+        editButton.onclick = function() {
+            for (var i = 0; i < cells.length - 1; i++) {
+                cells[i].textContent = cells[i].querySelector("input").value;
+            }
+            editButton.textContent = "Edit";
+            editButton.onclick = function() {
+                // Restore previous editing state
+                for (var i = 0; i < cells.length - 1; i++) {
+                    var input = document.createElement("input");
+                    input.value = cells[i].textContent;
+                    cells[i].textContent = '';
+                    cells[i].appendChild(input);
+                }
+                editButton.textContent = "Save";
+                editButton.onclick = function() {
+                    // Save edited content
+                    for (var i = 0; i < cells.length - 1; i++) {
+                        cells[i].textContent = cells[i].querySelector("input").value;
+                    }
+                    editButton.textContent = "Edit";
+                    editButton.onclick = function() {
+                        // Call edit function again
+                        editContent();
+                    };
+                };
+            };
+        };
+    };
+    actionCell.appendChild(editButton);
+
+    var deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.className = "delete-btn";
+    deleteButton.onclick = function() {
+        table.deleteRow(newRow.rowIndex);
+    };
+    actionCell.appendChild(deleteButton);
+
+    this.reset();
+});
+
+function editContent() {
+    // Edit function
+}
+
+</script>
+
+</body>
+</html>

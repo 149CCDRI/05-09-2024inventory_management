@@ -12,7 +12,6 @@ urlpatterns = [
     path('suppliers/', views.suppliers, name='suppliers'), 
     path('materials/', views.materials, name='materials'),
     path('orders/', views.place_order, name='place_order'),
-    path('order_success/', views.order_success, name='order_success'),
     path('inventory/', views.inventory, name='inventory'),
     path('admin/', admin.site.urls),
     path('register/', user_view.register, name='user-register'),

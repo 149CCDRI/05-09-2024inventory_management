@@ -16,6 +16,15 @@ class Client(models.Model):
     def __str__(self):
         return self.name
 
+class Inventory(models.Model):
+    name = models.CharField(max_length=100)
+    transaction_type = models.CharField(max_length=100)
+    transaction_quantity = models.IntegerField()
+    transaction_date = models.DateField()
+
+    def __str__(self):
+        return self.name
+
 class Supplier(models.Model):
     name = models.CharField(max_length=100)
     material = models.CharField(max_length=255)

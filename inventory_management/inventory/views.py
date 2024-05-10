@@ -7,7 +7,7 @@ from .models import Service, Order
 from django.utils import timezone
 
 def home(request):
-    return render(request, 'inventory/home.html')
+    return render(request, 'inventory/index.html')
     templates = loader.get_templates('base.html')
     return HttpResponse(templates.render(request)) 
 

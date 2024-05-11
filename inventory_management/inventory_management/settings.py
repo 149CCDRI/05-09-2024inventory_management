@@ -1,3 +1,4 @@
+import dj_database_url
 """
 Django settings for inventory_management project.
 
@@ -81,6 +82,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'default': dj_database_url.config(
+               default='https://zero5-09-2024inventory-management.onrender.com',
+               conn_max_age=600
+        )
     }
 }
 

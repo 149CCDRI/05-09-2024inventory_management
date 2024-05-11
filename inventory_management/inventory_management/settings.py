@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'inventory_management.wsgi.application'
 
 DATABASES = {
         'default': dj_database_url.config(
-               default='postgresql://postgres:postgres@localhost:5432/mysite',
+               default='https://zero3-05-6-30-pm-updated-system.onrender.com/',
                conn_max_age=600
         )
 }

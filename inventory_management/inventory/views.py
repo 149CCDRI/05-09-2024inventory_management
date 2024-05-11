@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import Service, Order
-
+from django.views.generic import TemplateView, View
 from django.utils import timezone
 
 def home(request):
@@ -11,12 +11,6 @@ def home(request):
     templates = loader.get_templates('base.html')
     return HttpResponse(templates.render(request)) 
 
-def service_list(request):
-    """
-    View function to display a list of available services.
-    """
-    services = Service.objects.all()
-    return render(request, 'inventory/service_list.html', {'services': services})
 
 def clients(request):
     """

@@ -1,4 +1,3 @@
-import dj_database_url
 """
 Django settings for inventory_management project.
 
@@ -26,7 +25,7 @@ SECRET_KEY = 'django-insecure-*la0^65w30yt%ttai7p1egrlb18n7hc18d(@4(rb02@i@b$kp@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['216.24.57.4']
+ALLOWED_HOSTS = ['216.24.57.252']
 
 
 # Application definition
@@ -79,10 +78,10 @@ WSGI_APPLICATION = 'inventory_management.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-        'default': dj_database_url.config(
-               default='https://zero3-05-6-30-pm-updated-system.onrender.com/',
-               conn_max_age=600
-        )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
@@ -135,5 +134,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 

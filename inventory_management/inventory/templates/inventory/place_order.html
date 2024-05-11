@@ -61,11 +61,46 @@
     h1 {
         color: #017F8D;
     }
+    .progress-wrapper {
+        position: relative;
+        display: inline-block;
+        background-color: #e5f4f4; /* Change this color as needed */
+        padding: 6px 10px;
+        border-radius: 4px;
+    }
+    .progress-wrapper select {
+        width: 100%;
+        border: none;
+        background: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        color: #ffffff; /* White text */
+        text-align: center;
+    }
+    .progress-wrapper select option[value="complete"] {
+        background-color: #AFDB38; /* Green for Complete */
+        color: #ffffff; /* White text */
+        text-align: center;
+    }
+
+    .progress-wrapper select option[value="in_progress"] {
+        background-color: #DB8138; /* Yellow for In Progress */
+        color: #ffffff; /* White text */
+        text-align: center;
+    }
+
+    .progress-wrapper select option[value="cancelled"] {
+        background-color: #DB3838; /* Red for Cancelled */
+        color: #ffffff; /* White text */
+        text-align: center;
+    }
 </style>
 </head>
 <body>
 
-{% include "partials/base.html" %}
+    {% include "partials/base.html" %}    
 
 <div class="content">
     <h1>Orders</h1>
@@ -76,10 +111,10 @@
         <input type="number" name="total_amount" placeholder="Total Amount">
         <input type="date" name="order_date" placeholder="Order Date">
         <input type="date" name="readyby_date" placeholder="Ready By">
-        <select id="progress" name="progress">
-          <option value="complete">Complete</option>
-          <option value="in_progress">In Progress</option>
-          <option value="cancelled">Cancelled</option>
+        <select id="progress" name="progress" class="progress-wrapper">
+            <option value="complete">Complete</option>
+            <option value="in_progress">In Progress</option>
+            <option value="cancelled">Cancelled</option>
         </select>
         <input type="number" name="transaction_quantity" placeholder="Transaction Quantity">
         
@@ -107,9 +142,34 @@ document.getElementById("orderForm").addEventListener("submit", function(event) 
     var table = document.getElementById("orderTable");
     var newRow = table.insertRow(-1);
     var cellIndex = 0;
-    formData.forEach(function(value) {
+    formData.forEach(function(value, key) {
         var cell = newRow.insertCell(cellIndex++);
-        cell.textContent = value;
+        if (key === 'progress') { // For Progress column
+            var progressWrapper = document.createElement("div");
+            progressWrapper.className = "progress-wrapper";
+            var select = document.createElement("select");
+            select.name = "progress";
+            select.className = "progress-dropdown";
+            var options = ["Complete", "In Progress", "Cancelled"];
+            options.forEach(function(option) {
+                var optionElement = document.createElement("option");
+                optionElement.value = option.toLowerCase().replace(/\s+/g, "_");
+                optionElement.textContent = option;
+                if (value.toLowerCase() === optionElement.value) { // Set default selected option
+                    optionElement.selected = true;
+                    progressWrapper.style.backgroundColor = getColor(optionElement.value); // Set wrapper background color based on selected option
+                }
+                select.appendChild(optionElement);
+            });
+            select.addEventListener("change", function() {
+                progressWrapper.style.backgroundColor = getColor(this.value); // Update wrapper background color based on selected option
+            });
+            progressWrapper.appendChild(select);
+            cell.appendChild(progressWrapper);
+            cell.classList.add('edited'); // Apply edited class
+        } else {
+            cell.textContent = value;
+        }
     });
     var actionCell = newRow.insertCell(cellIndex);
     var editButton = document.createElement("button");
@@ -117,7 +177,10 @@ document.getElementById("orderForm").addEventListener("submit", function(event) 
     editButton.className = "edit-btn";
     editButton.onclick = function() {
         var cells = newRow.cells;
-        for (var i = 0; i < cells.length - 1; i++) {
+        for (var i = 0; i < cells.length - 1; i++) { // Exclude action cell
+            if (i === 5) { // For Progress column
+                continue; // Skip progress column
+            }
             var input = document.createElement("input");
             input.value = cells[i].textContent;
             cells[i].textContent = '';
@@ -125,13 +188,20 @@ document.getElementById("orderForm").addEventListener("submit", function(event) 
         }
         editButton.textContent = "Save";
         editButton.onclick = function() {
-            for (var i = 0; i < cells.length - 1; i++) {
+            for (var i = 0; i < cells.length - 1; i++) { // Exclude action cell
+                if (i === 5) { // For Progress column
+                    continue; // Skip progress column
+                }
                 cells[i].textContent = cells[i].querySelector("input").value;
             }
             editButton.textContent = "Edit";
             editButton.onclick = function() {
-                // Restore previous editing state
-                for (var i = 0; i < cells.length - 1; i++) {
+                // Re-enable editing the row
+                var cells = newRow.cells;
+                for (var i = 0; i < cells.length - 1; i++) { // Exclude action cell
+                    if (i === 5) { // For Progress column
+                        continue; // Skip progress column
+                    }
                     var input = document.createElement("input");
                     input.value = cells[i].textContent;
                     cells[i].textContent = '';
@@ -139,15 +209,15 @@ document.getElementById("orderForm").addEventListener("submit", function(event) 
                 }
                 editButton.textContent = "Save";
                 editButton.onclick = function() {
-                    // Save edited content
-                    for (var i = 0; i < cells.length - 1; i++) {
+                    // Reassign the save function
+                    for (var i = 0; i < cells.length - 1; i++) { // Exclude action cell
+                        if (i === 5) { // For Progress column
+                            continue; // Skip progress column
+                        }
                         cells[i].textContent = cells[i].querySelector("input").value;
                     }
                     editButton.textContent = "Edit";
-                    editButton.onclick = function() {
-                        // Call edit function again
-                        editContent();
-                    };
+                    editButton.onclick = this.onclick; // Reassign the previous onclick function
                 };
             };
         };
@@ -169,6 +239,18 @@ function editContent() {
     // Edit function
 }
 
+function getColor(status) {
+    switch (status) {
+        case "complete":
+            return "#AFDB38"; // Green for Complete
+        case "in_progress":
+            return "#DB8138"; // Yellow for In Progress
+        case "cancelled":
+            return "#DB3838"; // Red for Cancelled
+        default:
+            return "#e5f4f4"; // Default color
+    }
+}
 </script>
 
 </body>
